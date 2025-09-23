@@ -1,0 +1,78 @@
+# Project Chatbot Notulensi Audit Site
+
+Chatbot ini dirancang untuk membantu pencatatan **notulensi audit site** secara otomatis dan terstruktur.  
+Sistem bekerja dengan konsep multi-user, di mana setiap pengguna harus memasukkan **password** terlebih dahulu sebelum dapat mengakses fitur bot.
+
+---
+
+## ✨ Fitur Utama
+1. **Autentikasi Password**  
+   - Pengguna harus login dengan password sebelum menggunakan bot.
+
+2. **Pencatatan Notulensi**  
+   - Contoh perintah:  
+     ```
+     catat site purbayan_pl
+     ```  
+   - Bot akan menanyakan catatan apa yang ingin ditulis.  
+   - Pengguna bisa menuliskan masalah site (misalnya *jaringan loss*, *trafik menurun*).  
+   - Bot akan merespon bahwa catatan berhasil disimpan.  
+   - Semua catatan tersimpan per site.
+
+3. **Upload Dokumen**  
+   - Mendukung format **.txt, .pdf, .docx (Word)**.  
+   - Perintah:  
+     ```
+     unggah dokumen site purbayan_pl
+     ```  
+   - Bot akan membuka box upload dan memberikan status ketika file berhasil diunggah.
+
+4. **Menampilkan Catatan**  
+   - Pengguna dapat menampilkan catatan dengan perintah:  
+     ```
+     tampilkan catatan site purbayan_pl
+     ```
+
+5. **Rekap Data**  
+   - Rekap catatan berdasarkan waktu:  
+     - `rekap minggu ini`  
+     - `rekap minggu kemarin`  
+     - `rekap bulan ini`  
+     - `rekap bulan x`  
+     - `rekap [tanggal/bulan/tahun] – [tanggal/bulan/tahun]`
+
+6. **RAG (Retrieval-Augmented Generation)**  
+   - Fitur untuk **merangkum notulensi** berdasarkan site tertentu.  
+   - Hasil rangkuman dapat diekspor ke format **TXT** maupun **PDF**.
+
+---
+
+## 🚀 Cara Menggunakan
+1. Login dengan password yang diberikan.  
+2. Gunakan perintah `catat site <nama_site>` untuk menambahkan catatan.  
+3. Gunakan perintah `unggah dokumen site <nama_site>` untuk mengunggah file.  
+4. Gunakan perintah `tampilkan catatan site <nama_site>` untuk melihat catatan.  
+5. Gunakan perintah `rekap ...` untuk melihat rekap data sesuai rentang waktu.  
+6. Gunakan fitur **RAG** untuk merangkum semua catatan site.
+
+---
+
+## 📂 Teknologi yang Digunakan
+- **Python 3**
+- **Telegram Bot API**
+- **LangChain + LLM (RAG)**
+- **FAISS Vectorstore**
+- **File Handling** (TXT, PDF, Word)
+- **Export Report** (TXT, PDF)
+
+---
+
+## 📌 Catatan
+- Bot ini dikembangkan untuk keperluan **notulensi audit site**.  
+- Semua data dicatat per site agar mudah dikelola dan dianalisis.  
+
+---
+
+## 👨‍💻 Author
+**Tsania Laeli Ainurrofiqoh**  
+Tugas Akhir / Skripsi – PT Indosat Central Java
