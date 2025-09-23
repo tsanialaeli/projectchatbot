@@ -25,7 +25,7 @@ from db_utils import get_db_connection
 
 # === Konfigurasi Vectorstore ===
 COLLECTION_NAME = "notulensi_vector"
-CONNECTION_STRING = "postgresql+psycopg2://postgres:Magangindosat1@localhost:5434/chatbot"
+CONNECTION_STRING = "......."
 embeddings = HuggingFaceEmbeddings(model_name="sentence-transformers/all-MiniLM-L6-v2")
 splitter = RecursiveCharacterTextSplitter(chunk_size=300, chunk_overlap=100)
 
@@ -228,3 +228,4 @@ if __name__ == "__main__":
 
     # Simpan ke PDF
     simpan_jawaban_ke_pdf(hasil_jawaban, "hasil_jawaban.pdf")
+
