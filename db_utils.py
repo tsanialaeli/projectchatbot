@@ -8,10 +8,10 @@ user_sessions = {}
 
 DB_CONFIG = dict(
     host="localhost",
-    port=5434,
-    database="chatbot",
-    user="postgres",
-    password="Magangindosat1",
+    port=.......,
+    database=".....",
+    user="......",
+    password=".....",
 )
 
 def get_db_connection():
@@ -154,4 +154,5 @@ def simpan_catatan_site(site_name: str, isi_catatan: str):
     finally:
         cur.close()
         conn.close()
+
 
