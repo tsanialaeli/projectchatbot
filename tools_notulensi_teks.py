@@ -196,9 +196,6 @@ def catat_notulensi(query: str, user_id: str = "default") -> str:
     if not valid_notes:
         return "⚠ Catatan terlalu pendek atau tidak valid. Sertakan deskripsi yang jelas minimal 6 karakter."
 
-    # Simpan ke session
-    session.setdefault("catatan", []).extend(valid_notes)
-
     # ----------------------------
     # Simpan ke database
     # ----------------------------
@@ -280,12 +277,10 @@ def parse_tanggal_to_db_format(tanggal_input: str) -> str:
 
 def tampilkan_notulensi(query: str, user_id: str = "default") -> str:
     query_lower = query.lower().strip()
-    session = user_sessions.get(user_id, {})
 
     site_tanggal_match = re.search(r"site\s+([a-z0-9_\-]+).*tanggal\s+([\w\s,\-/]+)", query_lower)
     tanggal_match = re.search(r"tanggal\s+([\w\s,\-/]+)", query_lower)
     site_match = re.search(r"(?:catatan|notulensi)\s+site\s+([a-z0-9_\-]+)", query_lower)
-    tampilkan_catatan_terakhir = "tampilkan catatannya" in query_lower or "tampilkan catatan" in query_lower
 
     try:
         with get_db_connection() as conn:
@@ -294,56 +289,7 @@ def tampilkan_notulensi(query: str, user_id: str = "default") -> str:
                 catatan_terstruktur = []
 
                 # ===========================
-                # MODE 1: SESSION ADA
-                # ===========================
-                if tampilkan_catatan_terakhir and session.get("site"):
-                    site = session.get("site") or session.get("last_site")
-
-                    # Ambil catatan session
-                    catatan_session = session.get("catatan", [])
-
-                    # Ambil catatan DB
-                    cur.execute(f"""
-                        SELECT tanggal, jam, isi_catatan, status, tanggal_selesai
-                        FROM {TABLE_NAME}
-                        WHERE LOWER(site_name) = %s
-                          AND isi_catatan IS NOT NULL
-                        ORDER BY id DESC
-                    """, (site.lower(),))
-                    rows_db = cur.fetchall()
-
-                    hasil.append(f"📑 **Catatan Site {site.upper()} (Session + Database):\n")
-
-                    semua_catatan = []
-
-                    # Masukkan DB
-                    for tgl, jam, isi, status, tgl_selesai in rows_db:
-                        poin = [p.strip() for p in isi.strip().splitlines() if p.strip()]
-                        semua_catatan.extend([{
-                            "tanggal": tgl,
-                            "jam": jam or "-",
-                            "isi": p,
-                            "status": status,
-                            "tanggal_selesai": tgl_selesai
-                        } for p in poin])
-
-                    # Masukkan session
-                    semua_catatan.extend(catatan_session)
-
-                    # Format output
-                    for item in semua_catatan:
-                        simbol = "✅" if item.get("status") == "selesai" else "⏳"
-                        selesai_info = f" (✅ selesai: {item.get('tanggal_selesai')})" if item.get("status") == "selesai" and item.get("tanggal_selesai") else ""
-                        hasil.append(f"📅 {item['tanggal']} - ⏰ {item['jam']}{selesai_info}\n{simbol} {item['isi']}\n")
-                        catatan_terstruktur.append(item)
-
-                    # Update session
-                    user_sessions[user_id]["catatan"] = catatan_terstruktur
-                    user_sessions[user_id]["last_site"] = site.upper()
-                    return format_notulensi_to_markdown("\n".join(hasil))
-
-                # ===========================
-                # MODE 2: SESSION KOSONG / LANGSUNG DB
+                # MODE 1 : SESSION KOSONG / LANGSUNG DB
                 # ===========================
                 site_to_query = None
                 tanggal_to_query = None
@@ -375,7 +321,11 @@ def tampilkan_notulensi(query: str, user_id: str = "default") -> str:
                 if tanggal_to_query:
                     sql += " AND tanggal = %s"
                     params.append(tanggal_to_query)
-                sql += " ORDER BY tanggal, jam"
+                sql += """
+                ORDER BY 
+                    to_date(tanggal, 'FMDay, DD FMMonth YYYY'),
+                    jam
+                """
 
                 cur.execute(sql, tuple(params))
                 rows = cur.fetchall()
@@ -471,7 +421,10 @@ def rekap_catatan(query: str, user_id: str = "default") -> str:
                     SELECT site_name, tanggal, jam, isi_catatan, status, tanggal_selesai
                     FROM {TABLE_NAME}
                     WHERE isi_catatan IS NOT NULL
-                    ORDER BY site_name, tanggal, jam
+                    ORDER BY 
+                        site_name,
+                        to_date(tanggal, 'FMDay, DD FMMonth YYYY'),
+                        jam
                 """)
                 rows = cur.fetchall()
 
