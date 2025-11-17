@@ -306,10 +306,9 @@ Pertanyaan: {input}
     )
 
     agent_with_memory = RunnableWithMessageHistory(
-        RunnableLambda(lambda x: base_executor.invoke(x)),
+        RunnableLambda(lambda x: base_executor.invoke(x).get("output", "")),
         get_session_history,
         input_messages_key="input",
         history_messages_key="chat_history",
-)
-
+    )
     return agent_with_memory
